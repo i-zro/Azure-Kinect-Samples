@@ -73,14 +73,9 @@ void print_body_information(uint32_t num, k4abt_body_t body)
 void PrintAppUsage()
 {
     printf("\n");
-    printf(" Basic Usage:\n\n");
-    printf(" 1. Make sure you place the camera parallel to the floor and there is only one person in the scene.\n");
-    printf(" 2. Raise both of your hands above your head or hit 'space' key to start the jump session.\n");
-    printf(" 3. Perform a jump. Try to land at the same location as the starting point.\n");
-    printf(" 4. Raise both of your hands above your head or hit 'space' key again to finish the session.\n");
-    printf(" 5. Three 3d windows will pop up to show the moment of your deepest squat, jump peak and a replay of your full jump session.\n");
-    printf("    Your jump analysis results will also be printed out on the command prompt.\n");
-    printf(" 6. Close any of the 3d windows to go back to the idle stage.\n");
+    printf(" 사용법 ");
+    printf(" 1. 스페이스 키를 누르거나 양손을 들면 jump session 시작 됨 \n");
+    printf(" 2. 뛰셈 \n");
     printf("\n");
 }
 
@@ -115,36 +110,40 @@ int64_t CloseCallback(void* /*context*/)
 
 int main()
 {
+#pragma region StartingPoint
     PrintAppUsage();
 
+    // 장치 연결 예외 처리
     k4a_device_t device = nullptr;
-    VERIFY(k4a_device_open(0, &device), "Open K4A Device failed!");
+    VERIFY(k4a_device_open(0, &device), "키넥트 장치 연결 실패!");
 
-    // Start camera. Make sure depth camera is enabled.
+    // 장치 연결 예외처리를 통과했다면, 카메라 설정 시작
     k4a_device_configuration_t deviceConfig = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
     deviceConfig.depth_mode = K4A_DEPTH_MODE_WFOV_2X2BINNED;
     deviceConfig.color_resolution = K4A_COLOR_RESOLUTION_OFF;
-    VERIFY(k4a_device_start_cameras(device, &deviceConfig), "Start K4A cameras failed!");
+    VERIFY(k4a_device_start_cameras(device, &deviceConfig), 
+        "키넥트 카메라가 시작이 안 됨");
 
-    // Get calibration information
     k4a_calibration_t sensorCalibration;
     VERIFY(k4a_device_get_calibration(device, deviceConfig.depth_mode, deviceConfig.color_resolution, &sensorCalibration),
-        "Get depth camera calibration failed!");
+        "깊이 카메라가 안 됨");
 
-    // Create Body Tracker
+    // Body Tracker (k4abt 설정 시작)
     k4abt_tracker_t tracker = nullptr;
     k4abt_tracker_configuration_t tracker_config = K4ABT_TRACKER_CONFIG_DEFAULT;
-    VERIFY(k4abt_tracker_create(&sensorCalibration, tracker_config, &tracker), "Body tracker initialization failed!");
+    VERIFY(k4abt_tracker_create(&sensorCalibration, tracker_config, &tracker), 
+        "바디 트래킹 모듈이 실행 안 됨");
 
-    // Initialize the 3d window controller
+    // 3d window controller Initialize 하기
     Window3dWrapper window3d;
-    window3d.Create("3D Visualization", sensorCalibration);
+    window3d.Create("3D", sensorCalibration);
     window3d.SetCloseCallback(CloseCallback);
     window3d.SetKeyCallback(ProcessKey);
+#pragma endregion
 
-    // Initialize the jump evaluator
+    // jump evaluator Initialize 하기
     JumpEvaluator jumpEvaluator;
-
+    
     while (s_isRunning)
     {
         k4a_capture_t sensorCapture = nullptr;
@@ -171,16 +170,17 @@ int main()
             break;
         }
 
-        // Pop Result from Body Tracker
+        // Body Tracker 결과 추출 
         k4abt_frame_t bodyFrame = nullptr;
-        k4a_wait_result_t popFrameResult = k4abt_tracker_pop_result(tracker, &bodyFrame, 0); // timeout_in_ms is set to 0
+        k4a_wait_result_t popFrameResult = k4abt_tracker_pop_result(tracker, &bodyFrame, 0); 
+        // timeout_in_ms is set to 0
         if (popFrameResult == K4A_WAIT_RESULT_SUCCEEDED)
         {
-            /************* 
-            Successfully get a body tracking result, process the result here 
+            /************** 
+            * 만약 body가 인식되면 여기서 결과 처리
             ***************/
 
-            // Obtain original capture that generates the body tracking result
+            // capture
             k4a_capture_t originalCapture = k4abt_frame_get_capture(bodyFrame);
 
 #pragma region Jump Analysis
@@ -208,21 +208,12 @@ int main()
             // Visualize the skeleton data
             window3d.CleanJointsAndBones();
             uint32_t numBodies = k4abt_frame_get_num_bodies(bodyFrame);
-            /****************************************
-            * 30/09/21 코드 : body tracking print*
-            ****************************************/
-            int frame_count = 0;    //  frame 번호 정의, 나중에 이 코드에 맞게 바꾸기
 
             for (uint32_t i = 0; i < numBodies; i++)
             {
                 k4abt_body_t body;
                 VERIFY(k4abt_frame_get_body_skeleton(bodyFrame, i, &body.skeleton), "Get skeleton from body frame failed!");
                 body.id = k4abt_frame_get_body_id(bodyFrame, i);
-
-                /****************************************
-                * 30/09/21 코드 : body tracking print*
-                ****************************************/
-               /* print_body_information(frame_count, body);*/
 
                 Color color = g_bodyColors[body.id % g_bodyColors.size()];
                 color.a = i == JumpEvaluationBodyIndex ? 0.8f : 0.1f;

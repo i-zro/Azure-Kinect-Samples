@@ -39,6 +39,7 @@ private:
     int DetermineCalculationWindowWidth(int jumpStartIndex, const std::vector<float>& timeStampInUsec);
 
     float GetMinKneeAngleFromBody(k4abt_body_t body);
+    float GetMinKneePosFromBody(k4abt_body_t body);
 
     IndexValueTuple CalcualateJumpStartingPoint(const std::vector<float>& velocity, const std::vector<IndexValueTuple>& velocityPhases);
 

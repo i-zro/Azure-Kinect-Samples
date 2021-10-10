@@ -14,14 +14,15 @@ using namespace std::chrono;
 
 struct JumpResultsData
 {
-    // Jump analysis results
+    // Jump 분석 결과 초기화
     float Height = 0;
     float PreparationSquatDepth = 0;
     float LandingSquatDepth = 0;
     float PushOffVelocity = 0;
     float KneeAngle = 0;
+    float KneePoint = 0; // 소심한 KneePoint 추가
 
-    // Fields that help to visualize the results
+    // 시각화 할 때 필요한 결과라는데 뭘까?
     k4a_float3_t StandingPosition;
     int PeakIndex = 0;
     int SquatPointIndex = 0;
@@ -72,6 +73,7 @@ void JumpEvaluator::UpdateData(k4abt_body_t selectedBody, uint64_t currentTimest
 /****************************************** Helper functions ******************************************/
 /******************************************************************************************************/
 
+// 
 void JumpEvaluator::UpdateStatus(bool changeStatus)
 {
     if (changeStatus)
@@ -80,17 +82,18 @@ void JumpEvaluator::UpdateStatus(bool changeStatus)
         if (m_jumpStatus == JumpStatus::Idle)
         {
             InitiateJump();
-            std::cout << "Jump Session Started!" << std::endl;
+            std::cout << "Jump Session 시작!" << std::endl;
             m_jumpStatus = JumpStatus::CollectJumpData;
         }
         else if (m_jumpStatus == JumpStatus::CollectJumpData)
         {
-            std::cout << "Jump Session End!" << std::endl;
+            std::cout << "Jump Session 끝" << std::endl;
             m_jumpStatus = JumpStatus::EvaluateAndReview;
         }
     }
 }
 
+// bodyposition이나 time stamp 저장하는 배열 초기화 해주는 함수
 void JumpEvaluator::InitiateJump()
 {
     m_listOfBodyPositions.clear();
@@ -140,6 +143,9 @@ JumpResultsData JumpEvaluator::CalculateJumpResults()
         // Knee angles
         float kneeAngleRes = GetMinKneeAngleFromBody(m_listOfBodyPositions[preparationSquatPoint.Index]);
 
+        // 발의 위치
+        float kneePosRes = GetMinKneePosFromBody(m_listOfBodyPositions[preparationSquatPoint.Index]);
+
         int jumpStartIndex = jumpStartingPoint.Index;
 
         int calculationWindowWidth = DetermineCalculationWindowWidth(jumpStartIndex, timestamp);
@@ -158,6 +164,7 @@ JumpResultsData JumpEvaluator::CalculateJumpResults()
         jumpResults.LandingSquatDepth = landingSquatPoint.Value - startHeight;
         jumpResults.PushOffVelocity = maxVelocityInMmPerUsec.Value / UsecToSecond;
         jumpResults.KneeAngle = kneeAngleRes;
+        jumpResults.KneePoint = kneePosRes; // 발
         jumpResults.StandingPosition = standingPosition;
         jumpResults.PeakIndex = maxHeight.Index;
         jumpResults.SquatPointIndex = preparationSquatPoint.Index;
@@ -170,6 +177,7 @@ JumpResultsData JumpEvaluator::CalculateJumpResults()
     return jumpResults;
 }
 
+// 결과 출력 함수
 void JumpEvaluator::PrintJumpResults(const JumpResultsData& jumpResults)
 {
     if (jumpResults.JumpSuccess)
@@ -180,6 +188,7 @@ void JumpEvaluator::PrintJumpResults(const JumpResultsData& jumpResults)
         std::cout << "   Countermovement (cm): " << -jumpResults.PreparationSquatDepth / 10.f << std::endl;
         std::cout << "   Push-off Velocity (m/second): " << jumpResults.PushOffVelocity / 1000.f << std::endl;
         std::cout << "   Knee Angle (degree): " << jumpResults.KneeAngle << std::endl;
+        std::cout << " Knee Point (위치): " << jumpResults.KneePoint << std::endl;
     }
     else
     {
@@ -274,6 +283,23 @@ float JumpEvaluator::GetMinKneeAngleFromBody(k4abt_body_t body)
     float leftKneeAngle = 180 - DSP::Angle(torzoLeft, kneeLeft, footLeft);
     float rightKneeAngle = 180 - DSP::Angle(torzoRight, kneeRight, footRight);
     return std::min(leftKneeAngle, rightKneeAngle);
+}
+
+// 발의 최소 위치 찾는 메서드 (테스트용)
+float JumpEvaluator::GetMinKneePosFromBody(k4abt_body_t body)
+{
+    k4a_float3_t footLeft = body.skeleton.joints[K4ABT_JOINT_ANKLE_LEFT].position;
+    k4a_float3_t kneeLeft = body.skeleton.joints[K4ABT_JOINT_KNEE_LEFT].position;
+    k4a_float3_t torzoLeft = body.skeleton.joints[K4ABT_JOINT_HIP_LEFT].position;
+
+    k4a_float3_t footRight = body.skeleton.joints[K4ABT_JOINT_ANKLE_RIGHT].position;
+    k4a_float3_t kneeRight = body.skeleton.joints[K4ABT_JOINT_KNEE_RIGHT].position;
+    k4a_float3_t torzoRight = body.skeleton.joints[K4ABT_JOINT_HIP_RIGHT].position;
+
+    float footLeftfloat = footLeft.xyz.x;
+    float leftKneeAngle = 180 - DSP::Angle(torzoLeft, kneeLeft, footLeft);
+    float rightKneeAngle = 180 - DSP::Angle(torzoRight, kneeRight, footRight);
+    return footLeftfloat;
 }
 
 IndexValueTuple JumpEvaluator::CalcualateJumpStartingPoint(
