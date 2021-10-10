@@ -111,6 +111,8 @@
     <Import Project="$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.targets" Condition="Exists('$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.targets')" />
     <Import Project="$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.targets" Condition="Exists('$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.targets')" />
     <Import Project="$(SolutionDir)\packages\glfw.3.3.0\build\native\glfw.targets" Condition="Exists('$(SolutionDir)\packages\glfw.3.3.0\build\native\glfw.targets')" />
+    <Import Project="packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets" Condition="Exists('packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets')" />
+    <Import Project="packages\glfw.3.3.4\build\native\glfw.targets" Condition="Exists('packages\glfw.3.3.4\build\native\glfw.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -121,5 +123,7 @@
     <Error Condition="!Exists('$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.targets'))" />
     <Error Condition="!Exists('$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.0.9.1\build\native\Microsoft.Azure.Kinect.BodyTracking.Dependencies.cuDNN.targets'))" />
     <Error Condition="!Exists('$(SolutionDir)\packages\glfw.3.3.0\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\glfw.3.3.0\build\native\glfw.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets'))" />
+    <Error Condition="!Exists('packages\glfw.3.3.4\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.3.3.4\build\native\glfw.targets'))" />
   </Target>
 </Project>

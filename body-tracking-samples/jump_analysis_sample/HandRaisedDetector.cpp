@@ -8,7 +8,9 @@ using namespace std::chrono;
 void HandRaisedDetector::UpdateData(k4abt_body_t selectedBody, uint64_t currentTimestampUsec)
 {
     k4a_float3_t leftWristJoint = selectedBody.skeleton.joints[K4ABT_JOINT_WRIST_LEFT].position;
+    printf("%f", leftWristJoint);
     k4a_float3_t rightWristJoint = selectedBody.skeleton.joints[K4ABT_JOINT_WRIST_RIGHT].position;
+    printf("%f", rightWristJoint);
     k4a_float3_t headJoint = selectedBody.skeleton.joints[K4ABT_JOINT_HEAD].position;
 
     // Notice: y direction is pointing towards the ground! So jointA.y < jointB.y means jointA is higher than jointB

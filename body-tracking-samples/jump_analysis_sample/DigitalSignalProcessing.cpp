@@ -3,6 +3,7 @@
 
 #include "DigitalSignalProcessing.h"
 
+#include <iostream>
 #include <cmath>
 #include <limits>
 

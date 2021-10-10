@@ -3,8 +3,10 @@
 
 #include <array>
 #include <iostream>
+#include <string>
 #include <map>
 #include <vector>
+#include <fstream> //txt 파일 위해서
 
 #include <k4a/k4a.h>
 #include <k4abt.h>
@@ -14,6 +16,59 @@
 #include <Window3dWrapper.h>
 
 #include "JumpEvaluator.h"
+
+using namespace std;
+
+/****************************************
+* 30/09/21 코드 : body tracking print*
+****************************************/
+
+// 현재 날짜, 시간 받을 ch 배열 전역에 선언
+char ch[20];
+
+void print_body_information(uint32_t num, k4abt_body_t body)
+{
+    std::cout << "관절 번호: " << body.id << std::endl;
+
+    // char 배열인 ch 를 string 형으로 변환
+    string str2 = " ";
+    str2 = ch;
+
+    // txt 파일 이름
+    string file_name = str2 + "/" + "frame" + to_string(num) + ".txt";
+
+    for (int i = 0; i < (int)K4ABT_JOINT_COUNT; i++)
+    {
+
+        k4a_float3_t position = body.skeleton.joints[i].position;
+        k4a_quaternion_t orientation = body.skeleton.joints[i].orientation;
+        k4abt_joint_confidence_level_t confidence_level = body.skeleton.joints[i].confidence_level;
+
+        /****************************************
+        * 좌표 txt 파일 작성
+        ****************************************/
+        printf("Joint[%d]: Position[mm] ( %f, %f, %f ); Orientation ( %f, %f, %f, %f); Confidence Level (%d)  \n",
+            i, position.v[0], position.v[1], position.v[2], orientation.v[0], orientation.v[1], orientation.v[2], orientation.v[3], confidence_level);
+        std::ofstream writeFile;            // 파일 선언
+        writeFile.open(file_name, ios::app);    // 파일 열기
+        if (writeFile.is_open())    // 파일이 열렸는지 확인 (추후 정말 시간 남을 때 예외처리 필요)
+        {
+            writeFile << to_string(i) + "\n";
+            writeFile << to_string(position.v[0]) + "\n";
+            writeFile << to_string(position.v[1]) + "\n";
+            writeFile << to_string(position.v[2]) + "\n";
+            writeFile << to_string(orientation.v[0]) + "\n";
+            writeFile << to_string(orientation.v[1]) + "\n";
+            writeFile << to_string(orientation.v[2]) + "\n";
+            writeFile << to_string(orientation.v[3]) + "\n";
+            writeFile << to_string(confidence_level) + "\n";
+            cout << file_name <<
+                " 저장완료" << endl;
+            writeFile.close();    // 파일 닫기
+        }
+    }
+}
+
 
 void PrintAppUsage()
 {
@@ -121,7 +176,9 @@ int main()
         k4a_wait_result_t popFrameResult = k4abt_tracker_pop_result(tracker, &bodyFrame, 0); // timeout_in_ms is set to 0
         if (popFrameResult == K4A_WAIT_RESULT_SUCCEEDED)
         {
-            /************* Successfully get a body tracking result, process the result here ***************/
+            /************* 
+            Successfully get a body tracking result, process the result here 
+            ***************/
 
             // Obtain original capture that generates the body tracking result
             k4a_capture_t originalCapture = k4abt_frame_get_capture(bodyFrame);
@@ -151,11 +208,21 @@ int main()
             // Visualize the skeleton data
             window3d.CleanJointsAndBones();
             uint32_t numBodies = k4abt_frame_get_num_bodies(bodyFrame);
+            /****************************************
+            * 30/09/21 코드 : body tracking print*
+            ****************************************/
+            int frame_count = 0;    //  frame 번호 정의, 나중에 이 코드에 맞게 바꾸기
+
             for (uint32_t i = 0; i < numBodies; i++)
             {
                 k4abt_body_t body;
                 VERIFY(k4abt_frame_get_body_skeleton(bodyFrame, i, &body.skeleton), "Get skeleton from body frame failed!");
                 body.id = k4abt_frame_get_body_id(bodyFrame, i);
+
+                /****************************************
+                * 30/09/21 코드 : body tracking print*
+                ****************************************/
+               /* print_body_information(frame_count, body);*/
 
                 Color color = g_bodyColors[body.id % g_bodyColors.size()];
                 color.a = i == JumpEvaluationBodyIndex ? 0.8f : 0.1f;
