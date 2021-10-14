@@ -61,7 +61,7 @@ private:
 
 private:
     // Constant settings for digial signal processing
-    const size_t MinimumBodyNumber = 20;  // Minimum number of bodies required in the body list to perform the jump analysis
+    const size_t MinimumBodyNumber = 20; // Minimum number of bodies required in the body list to perform the jump analysis
     const int AverageFilterWindowSize = 6;
 
     // Internal status

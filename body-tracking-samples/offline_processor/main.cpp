@@ -6,6 +6,7 @@
 #include <string>
 #include <iomanip>
 
+#include <cstdio>
 #include <k4a/k4a.h>
 #include <k4arecord/playback.h>
 #include <k4abt.h>

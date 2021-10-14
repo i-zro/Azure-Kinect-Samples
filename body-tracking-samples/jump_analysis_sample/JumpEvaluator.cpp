@@ -26,7 +26,7 @@ struct JumpResultsData
     k4a_float3_t StandingPosition;
     int PeakIndex = 0;
     int SquatPointIndex = 0;
-    bool JumpSuccess = false;
+    bool JumpSuccess = true;
 };
 
 /******************************************************************************************************/
@@ -82,12 +82,12 @@ void JumpEvaluator::UpdateStatus(bool changeStatus)
         if (m_jumpStatus == JumpStatus::Idle)
         {
             InitiateJump();
-            std::cout << "Jump Session 시작!" << std::endl;
+            std::cout << "시작!" << std::endl;
             m_jumpStatus = JumpStatus::CollectJumpData;
         }
         else if (m_jumpStatus == JumpStatus::CollectJumpData)
         {
-            std::cout << "Jump Session 끝" << std::endl;
+            std::cout << "끝" << std::endl;
             m_jumpStatus = JumpStatus::EvaluateAndReview;
         }
     }
@@ -103,7 +103,7 @@ void JumpEvaluator::InitiateJump()
 JumpResultsData JumpEvaluator::CalculateJumpResults()
 {
     JumpResultsData jumpResults;
-    jumpResults.JumpSuccess = false;
+    jumpResults.JumpSuccess = true;
 
     // Make sure we have enough data point
     if (m_listOfBodyPositions.size() <= MinimumBodyNumber)
@@ -183,17 +183,17 @@ void JumpEvaluator::PrintJumpResults(const JumpResultsData& jumpResults)
     if (jumpResults.JumpSuccess)
     {
         std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "Jump Analysis: " << std::endl;
+        std::cout << "결과 : " << std::endl;
         std::cout << "   Height (cm): " << jumpResults.Height / 10.f << std::endl;
         std::cout << "   Countermovement (cm): " << -jumpResults.PreparationSquatDepth / 10.f << std::endl;
         std::cout << "   Push-off Velocity (m/second): " << jumpResults.PushOffVelocity / 1000.f << std::endl;
         std::cout << "   Knee Angle (degree): " << jumpResults.KneeAngle << std::endl;
-        std::cout << " Knee Point (위치): " << jumpResults.KneePoint << std::endl;
+        std::cout << "   Knee Point (위치): " << jumpResults.KneePoint << std::endl;
     }
     else
     {
         std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "Jump Analysis Failed! Please try again!" << std::endl;
+        std::cout << "못잡" << std::endl;
         std::cout << "-----------------------------------------" << std::endl;
     }
 

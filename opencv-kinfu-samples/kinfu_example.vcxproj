@@ -14,7 +14,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{AE82EE82-2782-474F-98A9-06CFC7A3BB4D}</ProjectGuid>
     <RootNamespace>kinfu_example</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -67,14 +67,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>extern\opencv-4.1.0\include;extern\opencv_contrib-4.1.0\modules\rgbd\include;extern\opencv_contrib-4.1.0\modules\viz\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\kny84\Documents\opencv\build\include;extern\opencv-4.1.0\include;extern\opencv_contrib-4.1.0\modules\rgbd\include;extern\opencv_contrib-4.1.0\modules\viz\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>%(AdditionalDependencies);</AdditionalDependencies>
-      <AdditionalLibraryDirectories>extern\lib\Release;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\kny84\Documents\opencv\build\x64\vc15\lib;extern\lib\Release;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -86,12 +86,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\Microsoft.Azure.Kinect.Sensor.1.3.0\build\native\Microsoft.Azure.Kinect.Sensor.targets" Condition="Exists('packages\Microsoft.Azure.Kinect.Sensor.1.3.0\build\native\Microsoft.Azure.Kinect.Sensor.targets')" />
+    <Import Project="packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets" Condition="Exists('packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.Azure.Kinect.Sensor.1.3.0\build\native\Microsoft.Azure.Kinect.Sensor.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Azure.Kinect.Sensor.1.3.0\build\native\Microsoft.Azure.Kinect.Sensor.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Azure.Kinect.Sensor.1.4.1\build\native\Microsoft.Azure.Kinect.Sensor.targets'))" />
   </Target>
 </Project>

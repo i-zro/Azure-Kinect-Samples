@@ -73,9 +73,6 @@ void print_body_information(uint32_t num, k4abt_body_t body)
 void PrintAppUsage()
 {
     printf("\n");
-    printf(" 사용법 ");
-    printf(" 1. 스페이스 키를 누르거나 양손을 들면 jump session 시작 됨 \n");
-    printf(" 2. 뛰셈 \n");
     printf("\n");
 }
 
@@ -182,7 +179,6 @@ int main()
 
             // capture
             k4a_capture_t originalCapture = k4abt_frame_get_capture(bodyFrame);
-
 #pragma region Jump Analysis
             // Update jump evaluator status
             jumpEvaluator.UpdateStatus(s_spaceHit);
@@ -212,6 +208,7 @@ int main()
             for (uint32_t i = 0; i < numBodies; i++)
             {
                 k4abt_body_t body;
+
                 VERIFY(k4abt_frame_get_body_skeleton(bodyFrame, i, &body.skeleton), "Get skeleton from body frame failed!");
                 body.id = k4abt_frame_get_body_id(bodyFrame, i);
 
